@@ -24,6 +24,8 @@
 }
 
 *,*::before,*::after{ box-sizing:border-box; }
+/* hidden属性が display 指定に負けないようにする（.btn などが inline-flex のため） */
+[hidden]{ display:none !important; }
 
 html{ scroll-behavior:smooth; }
 

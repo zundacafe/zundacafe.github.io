@@ -154,9 +154,12 @@
         a.setAttribute('target', '_blank');
         a.setAttribute('rel', 'noopener');
       });
-    } else if (btn) {
-      btn.setAttribute('aria-disabled', 'true');
-      btn.setAttribute('title', 'グループURLが未設定です');
+    } else {
+      // グループURL未設定：押せないボタンを晒さず、副CTAを主CTAに繰り上げる
+      if (btn) btn.hidden = true;
+      var sub = document.querySelector('.cta-row .btn-sub');
+      if (sub) { sub.classList.remove('btn-sub'); sub.classList.add('btn-main'); }
+      if (footLink) footLink.removeAttribute('href');
     }
 
     /* --- X --- */
