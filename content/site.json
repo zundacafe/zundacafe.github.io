@@ -1,0 +1,23 @@
+{
+  "nextEvent": {
+    "baseDate": "2026-09-14",
+    "intervalDays": 14,
+    "startTime": "21:00",
+    "skipDates": [],
+    "override": null
+  },
+  "groupUrl": "",
+  "xUrl": "https://x.com/zunda_vrc",
+  "notice": {
+    "show": false,
+    "text": ""
+  },
+  "anniversary": {
+    "show": true,
+    "title": "第100回記念キャンペーン",
+    "date": "2026-10-25",
+    "startTime": "21:00",
+    "body": "ずんだもんカフェは、2026年10月25日で第100回を迎えるのだ。いつもより長い特別拡大版でお届けするのだ！",
+    "afterReport": ""
+  }
+}

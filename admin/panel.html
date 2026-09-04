@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ずんだもんカフェ 編集画面</title>
+<link rel="icon" href="../images/favicon.png" sizes="32x32" type="image/png">
+<link rel="icon" href="../images/favicon-64.png" sizes="64x64" type="image/png">
+<link rel="apple-touch-icon" href="../images/apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --z-paper: #F4F8E6;
+  --z-light: #DFEDBC;
+  --z-mid: #9CC45F;
+  --z-deep: #4E7A2E;
+  --z-ink: #2C3A20;
+  --z-card: #FCFDF7;
+  --z-kraft: #EFE6D0;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  font-family: "Zen Maru Gothic", "Quicksand", "Hiragino Maru Gothic ProN", sans-serif;
+  background-color: var(--z-paper);
+  color: var(--z-ink);
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+/* JSが display:flex を立てるだけで方向指定が無く、ヘッダー・本文・フッターが
+   横一列に並んでいた（2026-09-05 実機で検出・ジョン修正） */
+#main-screen {
+  flex-direction: column;
+  flex: 1;
+}
+input, textarea, button {
+  font-family: inherit;
+  font-size: 1rem;
+}
+.card {
+  background: var(--z-card);
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 16px rgba(78,122,46,.10);
+}
+.card h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  border-bottom: 2px solid var(--z-light);
+  padding-bottom: 8px;
+}
+label {
+  display: block;
+  margin-bottom: 16px;
+  font-weight: 700;
+}
+label small {
+  font-weight: 500;
+  font-size: 0.85rem;
+  color: var(--z-ink);
+  opacity: 0.8;
+}
+input[type="text"], input[type="password"], input[type="date"], input[type="time"], input[type="number"], textarea {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid var(--z-light);
+  border-radius: 12px;
+  margin-top: 8px;
+  background: var(--z-card);
+  color: var(--z-ink);
+  min-height: 44px;
+  outline: none;
+}
+input[type="text"]:focus, input[type="password"]:focus, input[type="date"]:focus, input[type="time"]:focus, input[type="number"]:focus, textarea:focus {
+  border-color: var(--z-mid);
+}
+textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+button {
+  cursor: pointer;
+  border: none;
+  border-radius: 12px;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 10px 24px;
+  font-weight: 700;
+  transition: opacity 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+button:hover {
+  opacity: 0.8;
+}
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.btn-primary {
+  background: var(--z-deep);
+  color: var(--z-card);
+}
+.btn-secondary {
+  background: var(--z-kraft);
+  color: var(--z-ink);
+}
+.check-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 700;
+  margin-top: 16px;
+  cursor: pointer;
+}
+.check-label input[type="checkbox"] {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  accent-color: var(--z-deep);
+}
+header {
+  background: var(--z-card);
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 16px rgba(78,122,46,.10);
+  z-index: 10;
+}
+.head-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+header {
+  position: sticky;
+  top: 0;
+}
+header h1 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 900;
+}
+#msg-bar {
+  padding: 16px 24px;
+  text-align: center;
+  font-weight: 700;
+  display: none;
+  margin: 16px 24px 0;
+  border-radius: 12px;
+}
+.msg-success { background: var(--z-light); color: var(--z-ink); border: 2px solid var(--z-mid); }
+.msg-error { background: var(--z-kraft); color: var(--z-ink); border: 2px solid var(--z-ink); }
+.msg-warn { background: var(--z-paper); color: var(--z-ink); border: 2px dashed var(--z-ink); }
+.layout-body {
+  display: flex;
+  flex: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 24px;
+  gap: 24px;
+}
+#sidebar {
+  width: 240px;
+  flex-shrink: 0;
+}
+.menu-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  color: var(--z-ink);
+  padding: 12px 16px;
+  margin-bottom: 8px;
+  border-radius: 12px;
+  font-weight: 700;
+  justify-content: flex-start;
+}
+.menu-item.active {
+  background: var(--z-deep);
+  color: var(--z-card);
+}
+#editor-container {
+  flex: 1;
+  min-width: 0;
+  padding-bottom: 80px;
+}
+.array-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 24px;
+  border-top: 2px dashed var(--z-light);
+  padding-top: 16px;
+}
+.array-actions .btn-delete {
+  margin-left: auto;
+}
+footer {
+  text-align: center;
+  padding: 24px;
+  font-size: 0.9rem;
+  color: var(--z-ink);
+  margin-top: auto;
+  font-weight: 700;
+}
+#auth-screen {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.auth-card {
+  background: var(--z-card);
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 4px 16px rgba(78,122,46,.10);
+  width: 100%;
+  max-width: 480px;
+}
+.auth-card h2 {
+  margin-top: 0;
+  text-align: center;
+}
+@media (max-width: 720px) {
+  .layout-body {
+    flex-direction: column;
+    padding: 16px;
+  }
+  #msg-bar {
+    margin: 16px 16px 0;
+  }
+  #sidebar {
+    width: 100%;
+    display: flex;
+    overflow-x: auto;
+    gap: 8px;
+    padding-bottom: 8px;
+  }
+  .menu-item {
+    white-space: nowrap;
+    margin-bottom: 0;
+  }
+  #save-btn {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    left: 16px;
+    width: calc(100% - 32px);
+    z-index: 100;
+    box-shadow: 0 4px 16px rgba(78,122,46,.30);
+  }
+}
+@media (min-width: 721px) {
+  #save-btn {
+    position: static;
+  }
+}
+</style>
+</head>
+<body>
+
+<div id="auth-screen">
+  <div class="auth-card">
+    <h2>GitHub アクセストークン</h2>
+    <label>
+      Personal Access Token (classic, repoスコープ) を入力してください。
+      <input type="password" id="token-input" placeholder="ghp_xxxxxxxxxxxx">
+    </label>
+    <button type="button" class="btn-primary" id="login-btn" style="width:100%; margin-top:16px;">ログイン</button>
+  </div>
+</div>
+
+<div id="main-screen" style="display:none;">
+  <header>
+    <h1>ずんだもんカフェ 編集画面</h1>
+    <div class="head-actions">
+      <button type="button" class="btn-primary" id="save-btn">保存してデプロイ</button>
+      <button type="button" class="btn-secondary" id="logout-btn">ログアウト</button>
+    </div>
+  </header>
+
+  <div id="msg-bar"></div>
+
+  <div class="layout-body">
+    <nav id="sidebar"></nav>
+    <main id="editor-container"></main>
+  </div>
+  
+  <footer>操作に困ったら <a href="../manual.html" style="color:var(--z-deep);font-weight:700">マニュアル</a> を見てください</footer>
+</div>
+
+<script>
+const GITHUB_OWNER = 'zundacafe';
+const GITHUB_REPO = 'zundacafe.github.io';
+const GITHUB_BRANCH = 'main';
+
+const MENU_ITEMS = [
+  { id: 'site', label: '開催情報', path: 'content/site.json', type: 'object' },
+  { id: 'staff', label: 'スタッフ', path: 'content/staff.json', type: 'array' },
+  { id: 'history', label: 'あゆみ', path: 'content/history.json', type: 'array' },
+  { id: 'collabs', label: 'コラボ', path: 'content/collabs.json', type: 'array' },
+  { id: 'credits', label: 'クレジット', path: 'content/credits.json', type: 'array' }
+];
+
+let currentToken = localStorage.getItem('zc_gh_token') || '';
+let currentMenuId = null;
+let currentData = null;
+let currentSha = null;
+let isDirty = false;
+
+function decodeBase64Utf8(base64) {
+  const binStr = atob(base64);
+  const len = binStr.length;
+  const bytes = new Uint8Array(len);
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binStr.charCodeAt(i);
+  }
+  return new TextDecoder().decode(bytes);
+}
+
+function encodeBase64Utf8(str) {
+  const bytes = new TextEncoder().encode(str);
+  const len = bytes.byteLength;
+  let binStr = "";
+  for (let i = 0; i < len; i++) {
+    binStr += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binStr);
+}
+
+function escapeHtml(str) {
+  if (typeof str !== 'string') return str;
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+}
+
+function showMsg(text, type, withReload = false) {
+  const bar = document.getElementById('msg-bar');
+  bar.className = `msg-${type}`;
+  bar.style.display = 'block';
+  bar.innerHTML = escapeHtml(text);
+  
+  if (withReload) {
+    const btn = document.createElement('button');
+    btn.textContent = '再読み込み';
+    btn.className = 'btn-secondary';
+    btn.style.marginLeft = '16px';
+    btn.style.marginTop = '8px';
+    btn.onclick = () => location.reload();
+    bar.appendChild(document.createElement('br'));
+    bar.appendChild(btn);
+  }
+}
+
+function hideMsg() {
+  document.getElementById('msg-bar').style.display = 'none';
+}
+
+function markDirty() {
+  isDirty = true;
+  document.getElementById('save-btn').disabled = false;
+}
+
+async function apiGet(path) {
+  const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}?ref=${GITHUB_BRANCH}`;
+  const res = await fetch(url, {
+    headers: {
+      'Authorization': `Bearer ${currentToken}`,
+      'Accept': 'application/vnd.github+json'
+    },
+    cache: 'no-store'
+  });
+  if (res.status === 401 || res.status === 403) throw new Error('AUTH_ERROR');
+  if (res.status === 404) throw new Error('NOT_FOUND');
+  if (!res.ok) throw new Error(`HTTP_ERROR: ${res.status}`);
+  
+  const json = await res.json();
+  return { content: decodeBase64Utf8(json.content), sha: json.sha };
+}
+
+async function apiPut(path, contentStr, sha) {
+  const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${path}`;
+  const base64Content = encodeBase64Utf8(contentStr);
+  const body = {
+    message: `update ${path.split('/').pop()} via admin panel`,
+    content: base64Content,
+    sha: sha,
+    branch: GITHUB_BRANCH
+  };
+  
+  const res = await fetch(url, {
+    method: 'PUT',
+    headers: {
+      'Authorization': `Bearer ${currentToken}`,
+      'Accept': 'application/vnd.github+json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  });
+  
+  if (res.status === 409) throw new Error('CONFLICT');
+  if (!res.ok) throw new Error(`HTTP_ERROR: ${res.status}`);
+  
+  const json = await res.json();
+  return json.content.sha;
+}
+
+function validate() {
+  try {
+    JSON.stringify(currentData);
+  } catch(e) {
+    throw new Error('データ構造が壊れています。');
+  }
+  
+  const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+  
+  if (currentMenuId === 'site') {
+    const d = currentData;
+    if (d.nextEvent) {
+      if (d.nextEvent.baseDate && !dateRegex.test(d.nextEvent.baseDate)) throw new Error('基本開催日の形式が不正です。YYYY-MM-DDで入力してください。');
+      if (d.nextEvent.override && !dateRegex.test(d.nextEvent.override)) throw new Error('臨時開催日の形式が不正です。YYYY-MM-DDで入力してください。');
+      if (typeof d.nextEvent.intervalDays !== 'number' || d.nextEvent.intervalDays < 1 || !Number.isInteger(d.nextEvent.intervalDays)) {
+        throw new Error('開催間隔は1以上の整数を指定してください。');
+      }
+      if (Array.isArray(d.nextEvent.skipDates)) {
+        for (const date of d.nextEvent.skipDates) {
+          if (date && !dateRegex.test(date)) throw new Error('休止日の形式が不正です。YYYY-MM-DDで入力してください。');
+        }
+      }
+    }
+    if (d.anniversary && d.anniversary.date && !dateRegex.test(d.anniversary.date)) {
+      throw new Error('記念日の日付形式が不正です。YYYY-MM-DDで入力してください。');
+    }
+  }
+  
+  if (currentMenuId === 'history') {
+    for (const item of currentData) {
+      const y = Number(item.year);
+      if (!Number.isInteger(y) || y < 1900 || y > 2999) {
+        throw new Error('あゆみの年は1900〜2999の整数を指定してください。');
+      }
+    }
+  }
+}
+
+async function handleSave() {
+  if (!isDirty) return;
+  try {
+    validate();
+  } catch (err) {
+    showMsg(err.message, 'error');
+    return;
+  }
+  
+  const btn = document.getElementById('save-btn');
+  btn.disabled = true;
+  btn.textContent = '保存中...';
+  hideMsg();
+  
+  const activeMenu = MENU_ITEMS.find(m => m.id === currentMenuId);
+  const currentJsonStr = JSON.stringify(currentData, null, 2);
+  
+  try {
+    const getRes = await apiGet(activeMenu.path);
+    if (getRes.sha !== currentSha) {
+      showMsg('他の人が先に更新しています。ページを再読み込みして、編集をやり直してください。', 'warn', true);
+      btn.textContent = '保存してデプロイ';
+      return;
+    }
+    
+    const newSha = await apiPut(activeMenu.path, currentJsonStr, currentSha);
+    currentSha = newSha;
+    isDirty = false;
+    showMsg('保存しました。1〜2分でサイトに反映されます。', 'success');
+  } catch (err) {
+    if (err.message === 'AUTH_ERROR') {
+      showMsg('トークンが無効か期限切れです。ログアウトして入れ直してください。', 'error');
+    } else if (err.message === 'NOT_FOUND') {
+      showMsg(`ファイルが見つかりません（${activeMenu.path}）。リポジトリの状態を確認してください。`, 'error');
+    } else {
+      showMsg(`ネットワークエラーまたは予期せぬエラーが発生しました。`, 'error');
+    }
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '保存してデプロイ';
+  }
+}
+
+async function selectMenu(id) {
+  if (isDirty) {
+    if (!confirm('未保存の変更があります。破棄して移動しますか？')) {
+      return;
+    }
+  }
+  isDirty = false;
+  currentMenuId = id;
+  document.getElementById('save-btn').disabled = true;
+  
+  document.querySelectorAll('.menu-item').forEach(el => {
+    if (el.dataset.id === id) el.classList.add('active');
+    else el.classList.remove('active');
+  });
+  
+  const activeMenu = MENU_ITEMS.find(m => m.id === id);
+  const container = document.getElementById('editor-container');
+  container.innerHTML = '<div style="padding:24px; text-align:center; font-weight:700;">読み込み中...</div>';
+  hideMsg();
+  
+  try {
+    const res = await apiGet(activeMenu.path);
+    currentSha = res.sha;
+    currentData = JSON.parse(res.content);
+    
+    if (activeMenu.type === 'object') {
+      renderSiteEditor(currentData);
+    } else {
+      renderArrayEditor(currentMenuId, currentData);
+    }
+  } catch (err) {
+    if (err.message === 'AUTH_ERROR') {
+      showMsg('トークンが無効か期限切れです。ログアウトして入れ直してください。', 'error');
+    } else if (err.message === 'NOT_FOUND') {
+      showMsg(`ファイルが見つかりません（${activeMenu.path}）。リポジトリの状態を確認してください。`, 'error');
+    } else {
+      showMsg(`読み込みエラーが発生しました。データが壊れている可能性があります。`, 'error');
+    }
+    container.innerHTML = '';
+  }
+}
+
+function renderSiteEditor(data) {
+  const container = document.getElementById('editor-container');
+  
+  data.nextEvent = data.nextEvent || {};
+  data.notice = data.notice || {};
+  data.anniversary = data.anniversary || {};
+  data.nextEvent.skipDates = data.nextEvent.skipDates || [];
+  
+  let skipDatesHtml = data.nextEvent.skipDates.map((date, i) => `
+    <div style="display:flex; gap:12px; margin-bottom:12px;">
+      <input type="date" value="${escapeHtml(date)}" data-index="${i}" class="skip-date-input" style="margin-top:0;">
+      <button type="button" class="btn-secondary skip-date-del" data-index="${i}">削除</button>
+    </div>
+  `).join('');
+
+  container.innerHTML = `
+    <div class="card">
+      <h3>次回開催情報</h3>
+      <label>基本開催日 <input type="date" id="site-baseDate" value="${escapeHtml(data.nextEvent.baseDate||'')}"></label>
+      <label>開催間隔（日数） <input type="number" min="1" id="site-intervalDays" value="${data.nextEvent.intervalDays||14}"></label>
+      <label>開始時刻 <input type="time" id="site-startTime" value="${escapeHtml(data.nextEvent.startTime||'')}"></label>
+      <label>臨時開催日（上書き）<br><small>※休止せず別日に変更する場合。不要なら空欄にしてください。</small> 
+        <input type="date" id="site-override" value="${escapeHtml(data.nextEvent.override||'')}">
+      </label>
+      <div style="margin-top:24px; padding-top:16px; border-top:2px dashed var(--z-light);">
+        <label>休止する回（日付）</label>
+        <div id="skip-dates-list">${skipDatesHtml}</div>
+        <button type="button" class="btn-secondary" id="add-skip-date">＋ 休止日を追加</button>
+      </div>
+    </div>
+    
+    <div class="card">
+      <h3>リンク</h3>
+      <label>VRChatグループURL <input type="text" id="site-groupUrl" value="${escapeHtml(data.groupUrl||'')}"></label>
+      <label>X (Twitter) URL <input type="text" id="site-xUrl" value="${escapeHtml(data.xUrl||'')}"></label>
+    </div>
+    
+    <div class="card">
+      <h3>お知らせ帯（サイト上部）</h3>
+      <label class="check-label">
+        <input type="checkbox" id="site-notice-show" ${data.notice.show ? 'checked' : ''}>
+        お知らせを表示する
+      </label>
+      <label>文章 <textarea id="site-notice-text">${escapeHtml(data.notice.text||'')}</textarea></label>
+    </div>
+    
+    <div class="card">
+      <h3>記念日・特別イベント</h3>
+      <label class="check-label">
+        <input type="checkbox" id="site-anniversary-show" ${data.anniversary.show ? 'checked' : ''}>
+        記念日情報を表示する
+      </label>
+      <label>タイトル <input type="text" id="site-anniversary-title" value="${escapeHtml(data.anniversary.title||'')}"></label>
+      <label>日付 <input type="date" id="site-anniversary-date" value="${escapeHtml(data.anniversary.date||'')}"></label>
+      <label>開始時刻 <input type="time" id="site-anniversary-startTime" value="${escapeHtml(data.anniversary.startTime||'')}"></label>
+      <label>開催前の文章 <textarea id="site-anniversary-body">${escapeHtml(data.anniversary.body||'')}</textarea></label>
+      <label>開催後の文章（レポートなど） <textarea id="site-anniversary-afterReport">${escapeHtml(data.anniversary.afterReport||'')}</textarea></label>
+    </div>
+  `;
+
+  const bindInput = (id, obj, key, type) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('change', (e) => {
+      let val = e.target.value;
+      if (type === 'checkbox') val = e.target.checked;
+      else if (type === 'number') val = parseInt(val, 10);
+      else if (type === 'date-null') val = val || null;
+      obj[key] = val;
+      markDirty();
+    });
+  };
+
+  bindInput('site-baseDate', data.nextEvent, 'baseDate', 'string');
+  bindInput('site-intervalDays', data.nextEvent, 'intervalDays', 'number');
+  bindInput('site-startTime', data.nextEvent, 'startTime', 'string');
+  bindInput('site-override', data.nextEvent, 'override', 'date-null');
+  
+  bindInput('site-groupUrl', data, 'groupUrl', 'string');
+  bindInput('site-xUrl', data, 'xUrl', 'string');
+  
+  bindInput('site-notice-show', data.notice, 'show', 'checkbox');
+  bindInput('site-notice-text', data.notice, 'text', 'string');
+  
+  bindInput('site-anniversary-show', data.anniversary, 'show', 'checkbox');
+  bindInput('site-anniversary-title', data.anniversary, 'title', 'string');
+  bindInput('site-anniversary-date', data.anniversary, 'date', 'string');
+  bindInput('site-anniversary-startTime', data.anniversary, 'startTime', 'string');
+  bindInput('site-anniversary-body', data.anniversary, 'body', 'string');
+  bindInput('site-anniversary-afterReport', data.anniversary, 'afterReport', 'string');
+
+  document.getElementById('add-skip-date').addEventListener('click', () => {
+    data.nextEvent.skipDates.push("");
+    markDirty();
+    renderSiteEditor(data);
+  });
+  
+  container.querySelectorAll('.skip-date-input').forEach(el => {
+    el.addEventListener('change', (e) => {
+      data.nextEvent.skipDates[e.target.dataset.index] = e.target.value;
+      markDirty();
+    });
+  });
+  
+  container.querySelectorAll('.skip-date-del').forEach(el => {
+    el.addEventListener('click', (e) => {
+      data.nextEvent.skipDates.splice(e.target.dataset.index, 1);
+      markDirty();
+      renderSiteEditor(data);
+    });
+  });
+}
+
+function getEmptyItem(type) {
+  if (type === 'staff') return { role: "", name: "", bio: "", image: "", show: true };
+  if (type === 'history') return { year: 2026, date: "", title: "", highlight: false, upcoming: false };
+  if (type === 'collabs') return { partner: "", years: "", note: "", logo: "" };
+  if (type === 'credits') return { label: "", url: "" };
+  return {};
+}
+
+function getArrayItemHtml(type, item) {
+  if (type === 'staff') {
+    return `
+      <label>役割 <input type="text" data-field="role" value="${escapeHtml(item.role)}"></label>
+      <label>名前 <input type="text" data-field="name" value="${escapeHtml(item.name)}"></label>
+      <label>自己紹介 <textarea data-field="bio">${escapeHtml(item.bio)}</textarea></label>
+      <label>画像URL <input type="text" data-field="image" value="${escapeHtml(item.image)}"></label>
+      <label class="check-label">
+        <input type="checkbox" data-field="show" ${item.show !== false ? 'checked' : ''}>
+        表示する（※退任者は削除せず、このチェックを外して非表示にしてください）
+      </label>
+    `;
+  }
+  if (type === 'history') {
+    return `
+      <label>年 <input type="number" data-field="year" value="${item.year}"></label>
+      <label>日付表記（例: 10月25日） <input type="text" data-field="date" value="${escapeHtml(item.date)}"></label>
+      <label>タイトル・内容 <input type="text" data-field="title" value="${escapeHtml(item.title)}"></label>
+      <label class="check-label">
+        <input type="checkbox" data-field="highlight" ${item.highlight ? 'checked' : ''}>
+        強調表示する（重要なお知らせなどで使用）
+      </label>
+      <label class="check-label">
+        <input type="checkbox" data-field="upcoming" ${item.upcoming ? 'checked' : ''}>
+        予告バッジを付ける（未来の予定などに使用）
+      </label>
+    `;
+  }
+  if (type === 'collabs') {
+    return `
+      <label>コラボ相手 <input type="text" data-field="partner" value="${escapeHtml(item.partner)}"></label>
+      <label>開催年表記（例: 2023 / 2024） <input type="text" data-field="years" value="${escapeHtml(item.years)}"></label>
+      <label>備考 <textarea data-field="note">${escapeHtml(item.note||'')}</textarea></label>
+      <label>ロゴ画像URL <input type="text" data-field="logo" value="${escapeHtml(item.logo)}"></label>
+    `;
+  }
+  if (type === 'credits') {
+    return `
+      <label>ラベル（名前や役割） <input type="text" data-field="label" value="${escapeHtml(item.label)}"></label>
+      <label>URL <input type="text" data-field="url" value="${escapeHtml(item.url)}"></label>
+    `;
+  }
+  return '';
+}
+
+function renderArrayEditor(type, dataArray) {
+  const container = document.getElementById('editor-container');
+  container.innerHTML = '';
+  
+  dataArray.forEach((item, index) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = getArrayItemHtml(type, item);
+    
+    const actions = document.createElement('div');
+    actions.className = 'array-actions';
+    
+    const btnUp = document.createElement('button');
+    btnUp.type = 'button';
+    btnUp.className = 'btn-secondary';
+    btnUp.textContent = '上へ移動';
+    btnUp.disabled = (index === 0);
+    btnUp.onclick = () => {
+      const temp = dataArray[index - 1];
+      dataArray[index - 1] = dataArray[index];
+      dataArray[index] = temp;
+      markDirty();
+      renderArrayEditor(type, dataArray);
+    };
+    
+    const btnDown = document.createElement('button');
+    btnDown.type = 'button';
+    btnDown.className = 'btn-secondary';
+    btnDown.textContent = '下へ移動';
+    btnDown.disabled = (index === dataArray.length - 1);
+    btnDown.onclick = () => {
+      const temp = dataArray[index + 1];
+      dataArray[index + 1] = dataArray[index];
+      dataArray[index] = temp;
+      markDirty();
+      renderArrayEditor(type, dataArray);
+    };
+    
+    const btnDel = document.createElement('button');
+    btnDel.type = 'button';
+    btnDel.className = 'btn-secondary btn-delete';
+    btnDel.textContent = '削除';
+    btnDel.onclick = () => {
+      if (confirm('本当に削除しますか？')) {
+        dataArray.splice(index, 1);
+        markDirty();
+        renderArrayEditor(type, dataArray);
+      }
+    };
+    
+    actions.appendChild(btnUp);
+    actions.appendChild(btnDown);
+    actions.appendChild(btnDel);
+    card.appendChild(actions);
+    container.appendChild(card);
+    
+    card.querySelectorAll('input, textarea').forEach(input => {
+      input.addEventListener('change', (e) => {
+        const field = e.target.dataset.field;
+        let val = e.target.value;
+        if (e.target.type === 'checkbox') val = e.target.checked;
+        else if (e.target.type === 'number') val = parseInt(val, 10);
+        
+        dataArray[index][field] = val;
+        markDirty();
+      });
+    });
+  });
+  
+  const addBtn = document.createElement('button');
+  addBtn.className = 'btn-secondary';
+  addBtn.style.width = '100%';
+  addBtn.textContent = '＋ 新しく追加';
+  addBtn.onclick = () => {
+    dataArray.push(getEmptyItem(type));
+    markDirty();
+    renderArrayEditor(type, dataArray);
+  };
+  container.appendChild(addBtn);
+}
+
+function showMainScreen() {
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('main-screen').style.display = 'flex';
+  
+  const sidebar = document.getElementById('sidebar');
+  sidebar.innerHTML = '';
+  MENU_ITEMS.forEach(m => {
+    const btn = document.createElement('button');
+    btn.className = 'menu-item';
+    btn.dataset.id = m.id;
+    btn.textContent = m.label;
+    btn.onclick = () => selectMenu(m.id);
+    sidebar.appendChild(btn);
+  });
+  
+  if (!currentMenuId) {
+    selectMenu(MENU_ITEMS[0].id);
+  }
+}
+
+function showAuthScreen() {
+  document.getElementById('auth-screen').style.display = 'flex';
+  document.getElementById('main-screen').style.display = 'none';
+}
+
+document.getElementById('login-btn').addEventListener('click', () => {
+  const token = document.getElementById('token-input').value.trim();
+  if (token) {
+    currentToken = token;
+    localStorage.setItem('zc_gh_token', token);
+    showMainScreen();
+  }
+});
+
+document.getElementById('logout-btn').addEventListener('click', () => {
+  if (isDirty && !confirm('未保存の変更があります。破棄してログアウトしますか？')) {
+    return;
+  }
+  currentToken = '';
+  localStorage.removeItem('zc_gh_token');
+  currentData = null;
+  currentSha = null;
+  isDirty = false;
+  currentMenuId = null;
+  document.getElementById('editor-container').innerHTML = '';
+  document.getElementById('token-input').value = '';
+  document.getElementById('save-btn').disabled = true;
+  hideMsg();
+  showAuthScreen();
+});
+
+document.getElementById('save-btn').addEventListener('click', handleSave);
+
+window.addEventListener('beforeunload', (e) => {
+  if (isDirty) {
+    e.preventDefault();
+    e.returnValue = '';
+  }
+});
+
+if (currentToken) {
+  showMainScreen();
+} else {
+  showAuthScreen();
+}
+</script>
+</body>
+</html>

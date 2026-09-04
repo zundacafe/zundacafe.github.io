@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ずんだもんカフェ 編集画面 マニュアル</title>
+<link rel="icon" href="images/favicon.png" sizes="32x32" type="image/png">
+<link rel="icon" href="images/favicon-64.png" sizes="64x64" type="image/png">
+<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --z-paper:#F4F8E6; --z-light:#DFEDBC; --z-mid:#9CC45F;
+  --z-deep:#4E7A2E;  --z-ink:#2C3A20;   --z-card:#FCFDF7; --z-kraft:#EFE6D0;
+}
+*,*::before,*::after{ box-sizing:border-box; }
+body{
+  margin:0; padding:0 20px 80px;
+  font-family:"Zen Maru Gothic","Quicksand","Hiragino Maru Gothic ProN",sans-serif;
+  font-weight:500; line-height:1.95; color:var(--z-ink);
+  background:var(--z-paper);
+}
+.wrap{ max-width:760px; margin-inline:auto; }
+h1{
+  margin:48px 0 6px; font-size:clamp(24px,5vw,32px); font-weight:900;
+  letter-spacing:.06em; color:var(--z-deep);
+}
+.sub{ margin:0 0 40px; font-size:15px; color:rgba(44,58,32,.75); }
+h2{
+  margin:48px 0 16px; padding:10px 18px;
+  font-size:clamp(18px,3.4vw,21px); font-weight:900; letter-spacing:.05em;
+  color:var(--z-card); background:var(--z-deep);
+  border-radius:14px 12px 14px 12px;
+}
+h3{ margin:28px 0 8px; font-size:16.5px; font-weight:900; color:var(--z-deep); }
+p{ margin:0 0 14px; }
+ol,ul{ margin:0 0 16px; padding-left:1.5em; }
+li{ margin-bottom:8px; }
+code{
+  padding:2px 7px; border-radius:6px;
+  background:var(--z-kraft); font-family:"Quicksand",monospace;
+  font-size:.92em; font-weight:700;
+}
+.card{
+  padding:20px 24px; margin:0 0 18px;
+  background:var(--z-card); border:2px solid rgba(78,122,46,.18);
+  border-radius:18px;
+}
+.warn{ background:var(--z-kraft); border-color:rgba(44,58,32,.35); }
+.warn h3{ color:var(--z-ink); }
+table{ width:100%; border-collapse:collapse; margin:0 0 18px; font-size:14.5px; }
+th,td{ padding:10px 12px; border-bottom:1px solid rgba(78,122,46,.2); text-align:left; vertical-align:top; }
+th{ background:var(--z-light); font-weight:700; white-space:nowrap; }
+.step{ counter-reset:none; }
+.big{ font-weight:900; color:var(--z-deep); }
+.foot{ margin-top:56px; padding-top:20px; border-top:1px solid rgba(78,122,46,.22); font-size:13px; color:rgba(44,58,32,.66); }
+@media (max-width:720px){
+  body{ padding:0 16px 60px; }
+  table, thead, tbody, tr, th, td{ display:block; }
+  th{ border-radius:8px; margin-bottom:4px; }
+  td{ padding-left:0; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>ずんだもんカフェ 編集画面 マニュアル</h1>
+<p class="sub">サイトの中身は、コードを触らずにこの画面から書き換えられます。この文書だけ読めば一通り操作できます。</p>
+
+<h2>1. これは何か</h2>
+<p>
+ずんだもんカフェの公式サイトは、表示する内容（開催情報・スタッフ・年表など）を
+<code>content</code> フォルダの中のデータファイルから読み込んで表示しています。
+</p>
+<p>
+編集画面（<code>admin/panel.html</code>）は、そのデータファイルをフォームで書き換えて、
+そのままサイトに反映するための道具です。<span class="big">HTMLやプログラムを触る必要はありません。</span>
+</p>
+
+<h2>2. 最初の一回だけ：アクセストークンを作る</h2>
+<p>
+編集画面がサイトのデータを書き換えるには、GitHubの「アクセストークン」という鍵が要ります。
+これは最初の一回だけ作れば、あとはそのブラウザに保存されます。
+</p>
+<ol>
+  <li>GitHubにログインし、右上のアイコン →「Settings」を開く</li>
+  <li>左メニューをいちばん下までスクロールし、「Developer settings」を開く</li>
+  <li>「Personal access tokens」→「Tokens (classic)」を開く</li>
+  <li>「Generate new token」→「Generate new token (classic)」を押す</li>
+  <li>Note（メモ欄）に <code>zundacafe site</code> と入れる</li>
+  <li>Expiration（期限）を選ぶ</li>
+  <li>スコープ（権限）は <span class="big">repo にだけチェックを入れる</span>。他は触らない</li>
+  <li>いちばん下の「Generate token」を押す</li>
+  <li>表示された文字列（<code>ghp_</code> で始まる）をコピーする</li>
+</ol>
+
+<div class="card warn">
+  <h3>注意</h3>
+  <p>
+    トークンは<span class="big">作った直後の一回しか表示されません。</span>
+    画面を閉じると二度と見られないので、その場でコピーして編集画面に貼り付けてください。
+    見失ったら作り直せば大丈夫です。
+  </p>
+  <p style="margin-bottom:0">
+    トークンは<span class="big">他人に見せないでください。</span>
+    これがあれば誰でもサイトを書き換えられます。
+  </p>
+</div>
+
+<h2>3. ログインする</h2>
+<ol>
+  <li>編集画面（<code>admin/panel.html</code>）をブラウザで開く</li>
+  <li>コピーしたトークンを貼り付けて「ログイン」を押す</li>
+</ol>
+<p>
+以後、同じブラウザなら自動でログインした状態になります。
+別のパソコンやスマホで使うときは、そちらでもう一度貼り付けてください。
+</p>
+<p>やめたいときは右上の「ログアウト」を押すと、そのブラウザから鍵が消えます。</p>
+
+<h2>4. 各画面でできること</h2>
+
+<h3>開催情報</h3>
+<p>次回の開催日、グループのURL、お知らせ、記念イベントの設定をします。</p>
+<table>
+  <tr><th>基本開催日</th><td>隔週の<span class="big">起点になる日</span>を1つ入れます。ここを毎回書き換える必要はありません。</td></tr>
+  <tr><th>開催間隔（日数）</th><td>隔週なら <code>14</code> です。</td></tr>
+  <tr><th>開始時刻</th><td>通常は <code>21:00</code>。</td></tr>
+  <tr><th>臨時開催日（上書き）</th><td>いつもの周期を無視して別の日にやるときだけ入れます。<span class="big">終わったら空欄に戻してください。</span></td></tr>
+  <tr><th>休止する回（日付）</th><td>お休みする回の日付を足します。その回は自動で飛ばして、次の回が表示されます。</td></tr>
+  <tr><th>VRChatグループURL</th><td>トップページの「グループに参加する」ボタンの行き先です。<span class="big">ここが空だとボタンが押せません。</span></td></tr>
+  <tr><th>お知らせ</th><td>チェックを入れると、トップページに一言だけお知らせの帯が出ます。</td></tr>
+  <tr><th>記念イベント</th><td>第100回などの特設ブロックです。開催後は「開催後の文章」に書いた内容へ自動で切り替わります。</td></tr>
+</table>
+
+<div class="card">
+  <h3>次回開催日は自動で計算されます</h3>
+  <p style="margin-bottom:0">
+    「基本開催日」から「開催間隔」ずつ数えて、<span class="big">今日より後で最初に来る日</span>を自動で表示します。
+    毎回手で書き換える必要はありません。
+    お休みする回だけ「休止する回」に足してください。
+  </p>
+</div>
+
+<h3>スタッフ</h3>
+<p>店員さんの紹介です。役割・名前・自己紹介・アイコン画像を編集できます。</p>
+<div class="card warn">
+  <h3>退任した人は「削除」しないでください</h3>
+  <p style="margin-bottom:0">
+    「表示する」のチェックを外すだけにしてください。<span class="big">記録が残り、復帰したときにすぐ戻せます。</span>
+    削除すると書いた紹介文ごと消えます。
+  </p>
+</div>
+
+<h3>あゆみ</h3>
+<p>年表です。記念回やコラボなどの特別イベントを載せます。通常回は載せません。</p>
+<ul>
+  <li><span class="big">年</span>：2026 のように数字で入れます。同じ年のものは自動でまとまります。</li>
+  <li><span class="big">日付</span>：「10月25日」のように日本語で書きます。</li>
+  <li><span class="big">強調表示</span>：その行を目立たせます。第100回のような特別な回に使います。</li>
+  <li><span class="big">予告</span>：まだ先の予定に「予告」の札を付けます。</li>
+</ul>
+
+<h3>コラボ</h3>
+<p>企業や公式アカウントとの実績です。ここは取材や依頼の入口になるので、正確に書いてください。</p>
+
+<h3>クレジット</h3>
+<p>使わせてもらっている素材の表記です。フッターに出ます。</p>
+
+<h2>5. 保存と反映</h2>
+<ol>
+  <li>編集したら、画面右上の<span class="big">「保存してデプロイ」</span>を押す</li>
+  <li>「保存しました」と出たら成功です</li>
+  <li><span class="big">1〜2分待つ</span>とサイトに反映されます</li>
+</ol>
+<p>
+すぐに変わらなくても慌てないでください。反映には少し時間がかかります。
+それでも変わらないときは、サイトのページで <code>Ctrl</code> + <code>Shift</code> + <code>R</code> を押してください（古い表示が残っているだけです）。
+</p>
+<p>
+保存は<span class="big">いま開いている種別だけ</span>が対象です。
+スタッフとあゆみの両方を直したなら、それぞれの画面で1回ずつ保存してください。
+</p>
+
+<h2>6. 困ったとき</h2>
+<table>
+  <tr><th>トークンが無効か期限切れです</th><td>トークンの期限が切れています。手順2で作り直し、ログアウトしてから入れ直してください。</td></tr>
+  <tr><th>他の人が先に更新しています</th><td>別の人が同時に編集して保存しました。<span class="big">上書きせずに止めています。</span>ページを再読み込みして、編集をやり直してください。</td></tr>
+  <tr><th>ファイルが見つかりません</th><td>データファイルの名前が変わったか、消えています。触らずに相談してください。</td></tr>
+  <tr><th>保存したのにサイトが変わらない</th><td>1〜2分待つ。それでも駄目なら <code>Ctrl</code> + <code>Shift</code> + <code>R</code>。</td></tr>
+  <tr><th>「グループに参加する」が押せない</th><td>開催情報の「VRChatグループURL」が空です。URLを入れて保存してください。</td></tr>
+  <tr><th>編集内容を消してしまった</th><td>保存前ならページを再読み込みすれば元に戻ります。保存後でも、GitHubに履歴が残っているので復元できます。慌てず相談してください。</td></tr>
+</table>
+
+<div class="card warn">
+  <h3>やらないほうがいいこと</h3>
+  <ul style="margin-bottom:0">
+    <li>トークンを他人に渡す、画面に映したまま配信する</li>
+    <li>スタッフを「削除」する（非表示にするだけで足ります）</li>
+    <li>データファイルをGitHub上で直接編集する（この画面から編集すれば安全です）</li>
+  </ul>
+</div>
+
+<h2>7. 引き継ぎについて</h2>
+<p>
+このサイトは <span class="big">GitHub の Organization（組織アカウント）の下に置いてあります。</span>
+運営が代わるときは、その Organization のオーナー権限を渡せば、
+<span class="big">サイトのURL・データ・この編集画面がまとめて引き継がれます。</span>
+</p>
+<p>
+個人のアカウントにぶら下げていないのは、そのためです。
+引き継いだ人はこのマニュアルをそのまま読めば運用を続けられます。
+</p>
+
+<p class="foot">
+ずんだもんカフェ 編集画面マニュアル<br>
+この文書はサイトと同じフォルダに置かれています。編集画面の最下部からも開けます。
+</p>
+
+</div>
+</body>
+</html>

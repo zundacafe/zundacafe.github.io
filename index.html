@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ずんだもんカフェ | VRChatのコンセプト系雑談交流カフェ</title>
+<meta name="description" content="AIボイスチェンジャーを使い、声も見た目も『ずんだもん』な店員さんが接客してくれる（かもしれない）コンセプト系雑談交流カフェ。VRChatで隔週月曜21時から開催中。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="ずんだもんカフェ">
+<meta property="og:description" content="声も見た目も『ずんだもん』な店員さんが接客してくれる（かもしれない）カフェなのだ！ VRChatで隔週月曜21時から開催中。">
+<meta property="og:url" content="https://zundacafe.github.io/">
+<meta property="og:image" content="https://zundacafe.github.io/images/ogp.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="images/favicon.png" sizes="32x32" type="image/png">
+<link rel="icon" href="images/favicon-64.png" sizes="64x64" type="image/png">
+<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css?v=5">
+</head>
+<body>
+
+<!-- ================= アイコン定義（絵文字は使わない・全て自作SVG） ================= -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <!-- 枝豆のさや -->
+    <symbol id="i-pod" viewBox="0 0 24 24">
+      <path d="M4.6 15.3C2.3 12 3.4 7.4 7 5.2c3.6-2.2 8.6-1.4 11.4 1.8 2.7 3.2 2 7.7-1.6 9.9-3.6 2.2-9.9 1.6-12.2-1.6Z"
+            fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+      <circle cx="9" cy="11.2" r="1.9" fill="currentColor"/>
+      <circle cx="13.4" cy="9.6" r="1.9" fill="currentColor"/>
+      <circle cx="16" cy="12.6" r="1.7" fill="currentColor"/>
+    </symbol>
+    <!-- 時計 -->
+    <symbol id="i-clock" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="8.6" fill="none" stroke="currentColor" stroke-width="1.9"/>
+      <path d="M12 7.2V12l3.3 2" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>
+    </symbol>
+    <!-- 人が集まる（グループ） -->
+    <symbol id="i-group" viewBox="0 0 24 24">
+      <circle cx="9" cy="8" r="3.2" fill="none" stroke="currentColor" stroke-width="1.9"/>
+      <path d="M3.4 19c.5-3.2 2.9-5 5.6-5s5.1 1.8 5.6 5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>
+      <path d="M16.2 5.6a3 3 0 0 1 0 5.6M17.4 14.4c1.8.6 3 2.3 3.3 4.6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>
+    </symbol>
+    <!-- 下向き矢印 -->
+    <symbol id="i-down" viewBox="0 0 24 24">
+      <path d="M12 4.8v13.4M6.4 12.8 12 18.4l5.6-5.6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <!-- 山カッコ（開閉） -->
+    <symbol id="i-chev" viewBox="0 0 24 24">
+      <path d="m6.8 9.6 5.2 5.2 5.2-5.2" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <!-- 服（ドレスコード） -->
+    <symbol id="i-wear" viewBox="0 0 24 24">
+      <path d="M9 3.6 12 6l3-2.4 4.6 2.3-1.6 4-2 .5v8H7v-8l-2-.5-1.6-4Z"
+            fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+    </symbol>
+    <!-- 注意（三角） -->
+    <symbol id="i-alert" viewBox="0 0 24 24">
+      <path d="M12 4.2 21 19.4H3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+      <path d="M12 10v3.6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>
+      <circle cx="12" cy="16.4" r="1.05" fill="currentColor"/>
+    </symbol>
+    <!-- 人（スタッフのプレースホルダ） -->
+    <symbol id="i-person" viewBox="0 0 24 24">
+      <circle cx="12" cy="8.4" r="3.6" fill="none" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M4.8 20c.6-3.9 3.6-6.2 7.2-6.2s6.6 2.3 7.2 6.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </symbol>
+    <!-- X -->
+    <symbol id="i-x" viewBox="0 0 24 24">
+      <path d="M3.4 3.4h4.3l5.1 6.8 5.5-6.8h2.3l-6.8 8.3 7.2 9.5h-4.3l-5.4-7.2-5.9 7.2H3.1l7.3-8.9Z" fill="currentColor"/>
+    </symbol>
+  </defs>
+</svg>
+
+<!-- ================= ヘッダー ================= -->
+<header class="site-head">
+  <div class="wrap">
+    <a class="brand" href="#top">
+      <img src="images/logo.svg" alt="ずんだもんカフェ" width="842" height="274">
+    </a>
+    <nav class="nav">
+      <a href="#about">カフェについて</a>
+      <a href="#join">参加のしかた</a>
+      <a href="#staff">店員さん</a>
+      <a href="#history">あゆみ</a>
+      <a href="#collab">コラボ</a>
+      <a href="#contact">お問い合わせ</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ================= ヒーロー ================= -->
+<div class="hero" id="top">
+  <div class="wrap hero-inner">
+      <h1 class="hero-logo">
+        <img src="images/logo.svg" alt="ずんだもんカフェ" width="842" height="274">
+      </h1>
+      <p class="hero-sub">
+        AIボイスチェンジャーを使い、<b>声も見た目も『ずんだもん』な店員さん</b>が
+        接客してくれる（かもしれない）コンセプト系雑談交流カフェなのだ！
+        ドレスコードもないので、気軽に遊びに来て欲しいのだ！
+      </p>
+
+      <div class="next-card" id="next-card">
+        <div class="label">
+          <svg aria-hidden="true"><use href="#i-clock"></use></svg>
+          <span id="next-label">つぎの開催</span>
+        </div>
+        <div class="date" id="next-date">読み込み中…</div>
+        <div class="time" id="next-time"></div>
+      </div>
+
+      <div class="cta-row">
+        <a class="btn btn-main" id="group-btn" href="#join">
+          <svg aria-hidden="true"><use href="#i-group"></use></svg>
+          グループに参加する
+        </a>
+        <a class="btn btn-sub" href="#join">
+          <svg aria-hidden="true"><use href="#i-down"></use></svg>
+          はじめての方へ
+        </a>
+      </div>
+
+      <div class="notice" id="notice" hidden></div>
+  </div>
+</div>
+
+<main>
+
+<!-- ================= カフェについて ================= -->
+<section id="about">
+  <div class="wrap">
+    <h2 class="sec-head">ずんだもんカフェとは</h2>
+    <p class="sec-lead">ずんだもんが好きな人が集まる、ゆるい交流の場なのだ。</p>
+
+    <div class="about-body">
+      <p>
+        AIボイスチェンジャーを使い、声も見た目も『ずんだもん』な店員さんが接客してくれる（かもしれない）
+        コンセプト系雑談交流カフェなのだ！ ドレスコードもないので、気軽に遊びに来て欲しいのだ！
+      </p>
+      <p>
+        ずんだもんが好きな人が集まって、ずんだもんの事やVRChatの事など、
+        面白、楽しく、ユーモラスに溢れる<b>ずんだもんLOVEを全面推し</b>しています。
+      </p>
+      <p>
+        2週間毎の隔週月曜日21時から、VRSNS「VRChat」にて一般ユーザー主催で行われるイベントです。
+        インスタンスはグループ＋で行われるので、グループ「ずんだもんカフェ」への加入が参加の条件となります。
+      </p>
+
+      <details class="vc">
+        <summary>
+          AIボイスチェンジャーについて
+          <svg class="chev" aria-hidden="true"><use href="#i-chev"></use></svg>
+        </summary>
+        <div class="vc-body">
+          <p>
+            現在、スタッフの全員が株式会社Parakeet様より開発・運営されている
+            AIボイスチェンジャー『Paravo』を使用しています。以前は、MMVCやRVC等を使用していました。
+          </p>
+          <p>
+            『Paravo』に関してはVRSNS『VRChat』にて非常に使用しやすい環境構築で、
+            数あるAIボイスチェンジャーの中では手軽に高性能な変換が可能となっています。
+          </p>
+          <p>
+            特に、殆どのボイスチェンジャーは「GPU」を使用するのに対して『Paravo』は「CPU」を使用するため、
+            「GPU」の使用率の大半を占める3Dプラットフォームと互いに影響される事なく、
+            スムーズな変換とプレイングが行えます。「VRChat」ではかなり重宝する変換ソフトです。
+          </p>
+        </div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 参加のしかた ================= -->
+<section id="join">
+  <svg class="wave wave-top" viewBox="0 0 1200 34" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0 0h1200v11c-140 16-260-6-400-6S220 34 0 17Z"/>
+  </svg>
+  <div class="wrap">
+    <h2 class="sec-head">参加のしかた</h2>
+    <p class="sec-lead">はじめての方でも大丈夫なのだ。3つだけ確認してほしいのだ。</p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="num">1</div>
+        <h3>グループに加入する</h3>
+        <p>インスタンスはグループ＋で行われるので、VRChatグループ「ずんだもんカフェ」への加入が参加条件なのだ。</p>
+      </div>
+      <div class="step">
+        <div class="num">2</div>
+        <h3>開催日にVRChatへ</h3>
+        <p>2週間毎の隔週月曜日、21時から開催しているのだ。途中参加も途中退出も自由なのだ。</p>
+      </div>
+      <div class="step">
+        <div class="num">3</div>
+        <h3>好きなアバターで来る</h3>
+        <p>ゲストは基本的にどのようなアバターでも大丈夫なのだ。ドレスコードは無いのだ。</p>
+      </div>
+    </div>
+
+    <div class="rule-grid">
+      <div class="rule-box">
+        <h3><svg aria-hidden="true"><use href="#i-wear"></use></svg>ドレスコードについて</h3>
+        <ul class="rule-list">
+          <li>ゲストは基本的に<b>どのようなアバターでも可</b>です。</li>
+          <li>ゲストが「ずんだもん」アバターや「ずんだもん」似の改変アバターを使用した場合は、<b>野良ずんだもん</b>としてのイベント参加になります。</li>
+          <li>スタッフは全員「ずんだもん」アバターか「ずんだもん」似の改変アバターが必須です。スタッフとして専用の「スタッフ章」を配布するので、それをUnityで付けます。</li>
+        </ul>
+        <ul class="rule-list ng" style="margin-top:14px">
+          <li><b>100MBを超える大容量アバターは禁止</b>です。</li>
+          <li>周囲に迷惑が掛かり、イベントの運営を妨げるようなアバターは全面禁止です。</li>
+        </ul>
+      </div>
+
+      <div class="rule-box kraft">
+        <h3><svg aria-hidden="true"><use href="#i-alert"></use></svg>イベント時の注意事項</h3>
+        <ul class="rule-list ng">
+          <li>公式ガイドラインに反しない。</li>
+          <li>過度な暴力表現を再現する。</li>
+          <li>特定の政治や宗教などに寄与する発言や行動。</li>
+          <li>過度な露出や損壊させたアバターの使用。</li>
+          <li>R18表現（コッショリは個人でやってね）</li>
+          <li>運営スタッフやゲストに対する迷惑行為。</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <svg class="wave wave-bottom" viewBox="0 0 1200 34" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0 0h1200v11c-140 16-260-6-400-6S220 34 0 17Z"/>
+  </svg>
+</section>
+
+<!-- ================= 店員さん ================= -->
+<section id="staff">
+  <div class="wrap">
+    <h2 class="sec-head">愉快な店員さん</h2>
+    <p class="sec-lead">ずんだもんカフェを回している面々なのだ。</p>
+    <div class="staff-grid" id="staff-grid"></div>
+  </div>
+</section>
+
+<!-- ================= あゆみ ================= -->
+<section id="history">
+  <svg class="wave wave-top" viewBox="0 0 1200 34" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0 0h1200v11c-140 16-260-6-400-6S220 34 0 17Z"/>
+  </svg>
+  <div class="wrap">
+    <h2 class="sec-head">あゆみ</h2>
+    <p class="sec-lead">2022年の構想から、100回目までの記録なのだ。<br>ここに載っているのは記念回とコラボなどの特別イベントなのだ。</p>
+    <div class="timeline" id="timeline"></div>
+  </div>
+  <svg class="wave wave-bottom" viewBox="0 0 1200 34" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0 0h1200v11c-140 16-260-6-400-6S220 34 0 17Z"/>
+  </svg>
+</section>
+
+<!-- ================= コラボ ================= -->
+<section id="collab">
+  <div class="wrap">
+    <h2 class="sec-head">これまでのコラボ・掲載</h2>
+    <p class="sec-lead">企業・公式アカウントとご一緒させていただいた記録なのだ。</p>
+    <div class="collab-list" id="collab-list"></div>
+  </div>
+</section>
+
+<!-- ================= 100回記念 ================= -->
+<section id="anniv" hidden>
+  <svg class="wave wave-top" viewBox="0 0 1200 34" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0 0h1200v11c-140 16-260-6-400-6S220 34 0 17Z"/>
+  </svg>
+  <div class="wrap">
+    <div class="anniv">
+      <div class="kicker">ANNIVERSARY</div>
+      <h2 id="anniv-title"></h2>
+      <div class="when" id="anniv-when"></div>
+      <p id="anniv-body"></p>
+    </div>
+  </div>
+  <svg class="wave wave-bottom" viewBox="0 0 1200 34" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0 0h1200v11c-140 16-260-6-400-6S220 34 0 17Z"/>
+  </svg>
+</section>
+
+</main>
+
+<!-- ================= フッター ================= -->
+<footer class="site-foot" id="contact">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <h3>お問い合わせ</h3>
+        <a class="foot-link" id="x-link" href="https://x.com/zunda_vrc" target="_blank" rel="noopener">
+          <svg aria-hidden="true"><use href="#i-x"></use></svg>
+          @zunda_vrc
+        </a>
+        <p style="font-size:13.5px;margin:10px 0 0">
+          ご質問・取材・コラボのご相談はこちらまでお願いします。
+        </p>
+      </div>
+      <div>
+        <h3>参加する</h3>
+        <a class="foot-link" id="group-link-foot" href="#join">
+          <svg aria-hidden="true"><use href="#i-group"></use></svg>
+          VRChatグループ「ずんだもんカフェ」
+        </a>
+        <p style="font-size:13.5px;margin:10px 0 0">
+          隔週月曜21時から。グループ＋インスタンスで開催しています。
+        </p>
+      </div>
+      <div id="credits-block" hidden>
+        <h3>利用素材</h3>
+        <ul class="credit-list" id="credit-list"></ul>
+      </div>
+    </div>
+    <div class="copy">
+      <span>ずんだもんカフェ</span>
+      <span>VRChat コンセプト系雑談交流カフェ</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/app.js?v=5"></script>
+</body>
+</html>
