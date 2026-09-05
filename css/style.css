@@ -43,6 +43,10 @@ body{
   background-attachment:fixed;
   -webkit-font-smoothing:antialiased;
   text-size-adjust:100%;
+  /* 日本語の折り返しを文節単位にする。単語の途中で切れるのを防ぐ
+     （2026-09-05 軍曹パパ指摘「文章の途切れ方がきになる」への対応）
+     未対応ブラウザは既定の折り返しに戻るだけで、壊れない */
+  word-break:auto-phrase;
 }
 
 img{ max-width:100%; height:auto; display:block; }
@@ -534,4 +538,9 @@ details.vc .vc-body p:last-child{ margin-bottom:0; }
 @media (prefers-reduced-motion:reduce){
   html{ scroll-behavior:auto; }
   .btn{ transition:none; }
+}
+
+/* 見出しとリード文は行末の孤立語を避ける */
+.sec-head,.sec-lead,.hero-sub,.next-card,.tl-title,.staff-bio,.collab-note{
+  text-wrap:pretty;
 }
